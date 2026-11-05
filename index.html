@@ -97,6 +97,9 @@ button{font:inherit;cursor:pointer;border-radius:999px}
 .toggle input{width:18px;height:18px;accent-color:var(--accent)}
 .totals{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted)}
 .totals div{display:flex;justify-content:space-between;gap:12px}
+.itemsum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--accent-soft);border-radius:10px;padding:10px 14px;font-size:.86rem;color:var(--muted)}
+.itemsum b{font-family:var(--f-display);font-weight:400;font-size:1.25rem;color:var(--ink);font-variant-numeric:tabular-nums lining-nums}
+.itemsum small{display:block;font-size:.76rem}
 .totals .grand{color:var(--ink);font-family:var(--f-display);font-size:1.15rem;border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
 .row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .row:last-child{border-bottom:none}
@@ -138,6 +141,7 @@ button{font:inherit;cursor:pointer;border-radius:999px}
   <section class="paper">
     <div class="label">รายการอาหาร <button class="btn ghost" id="clearItems" type="button">ล้างทั้งหมด</button></div>
     <div id="items"></div>
+    <div class="itemsum" id="itemSum" hidden></div>
     <form class="addrow" id="addItem">
       <input id="newItemName" placeholder="ชื่อรายการ" autocomplete="off">
       <input id="newItemPrice" placeholder="ราคา" inputmode="decimal" style="width:6em;flex:none">
@@ -189,7 +193,7 @@ button{font:inherit;cursor:pointer;border-radius:999px}
     <textarea id="copyBox" hidden readonly style="width:100%;min-height:8em;font-family:var(--f-body);font-size:.8rem;color:var(--ink);background:var(--accent-soft);border:none;border-radius:10px;padding:10px"></textarea>
   </section>
 
-  <p class="ver">หารค่าข้าว v1.0.1</p>
+  <p class="ver">หารค่าข้าว v1.0.2</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
@@ -292,6 +296,9 @@ function render() {
 
 function renderResult() {
   const c = compute();
+  // Running total right under the food list, so the sum is visible as soon as items are typed
+  $("itemSum").hidden = !S.items.length;
+  if (S.items.length) $("itemSum").innerHTML = `<span>รวม ${S.items.length} รายการ<small>รวม Service/VAT แล้ว ${fmt(c.total)}</small></span><b>${fmt(c.subtotal)}</b>`;
   const sc = svcIn() ? 0 : c.subtotal * (+S.svc || 0) / 100;
   const vat = vatIn() ? 0 : (c.subtotal + sc) * (+S.vat || 0) / 100;
   $("totals").innerHTML = `
