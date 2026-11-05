@@ -104,18 +104,6 @@ button{font:inherit;cursor:pointer;border-radius:999px}
 .row .amt{font-family:var(--f-display);font-size:1.5rem;font-weight:400;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums lining-nums}
 .row .detail{grid-column:1/-1;font-size:.78rem;color:var(--muted);font-weight:400}
 .hint{margin:0;font-size:.86rem;color:var(--muted);font-weight:400}
-.scanbtn{text-align:center;padding:14px;font-size:.95rem;cursor:pointer}
-.scanstatus{font-size:.88rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.scanstatus img{width:52px;height:52px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
-.scanstatus.err{color:var(--warn)}
-.keybox summary{cursor:pointer;font-size:.84rem;color:var(--accent);list-style:none}
-.keybox summary::-webkit-details-marker{display:none}
-.keybox[open] summary{margin-bottom:10px}
-.keybox .addrow input{font-size:.9rem}
-.keybox .hint{font-size:.78rem;margin-top:8px}
-.keybox a{color:var(--accent)}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.2}}
 .coverbtn{align-self:flex-start;font-size:.8rem;color:var(--accent);padding:0}
 .cover{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border-radius:10px;padding:12px 14px}
 .cover-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.86rem}
@@ -135,7 +123,7 @@ button{font:inherit;cursor:pointer;border-radius:999px}
   <header>
     <h1>หารค่าข้าว</h1>
     <button type="button" class="theme" id="themeBtn" aria-label="สลับโหมดมืด/สว่าง"></button>
-    <p>ใส่ชื่อเพื่อน สแกนบิล แล้วเลือกว่าใครกินอะไร ระบบคิด Service + VAT ตามสัดส่วนให้</p>
+    <p>ใส่ชื่อเพื่อน ใส่รายการจากบิล แล้วเลือกว่าใครกินอะไร ระบบคิด Service + VAT ตามสัดส่วนให้</p>
   </header>
 
   <section class="paper">
@@ -145,23 +133,6 @@ button{font:inherit;cursor:pointer;border-radius:999px}
       <input id="newPerson" placeholder="เพิ่มชื่อ" autocomplete="off">
       <button class="btn" type="submit">เพิ่ม</button>
     </form>
-  </section>
-
-  <section class="paper scan" id="scanBox">
-    <div class="label">สแกนบิล</div>
-    <p class="hint">ถ่ายรูปหรือเลือกรูปใบเสร็จ AI จะดึงรายการ ราคา Service และ VAT ให้อัตโนมัติ จากนั้นแค่กดเลือกว่าใครกินอะไร</p>
-    <label class="btn primary scanbtn" for="billPhoto">ถ่าย / เลือกรูปบิล</label>
-    <input type="file" id="billPhoto" accept="image/*" hidden>
-    <div class="scanstatus" id="scanStatus" hidden></div>
-    <details class="keybox" id="keyBox">
-      <summary id="keySummary">ตั้งค่า Anthropic API key</summary>
-      <form class="addrow" id="keyForm">
-        <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
-        <button class="btn" type="submit">บันทึก</button>
-        <button class="btn ghost" type="button" id="keyClear">ลบ</button>
-      </form>
-      <p class="hint">การสแกนบิลใช้ Claude ผ่าน API key ของคุณเอง key เก็บไว้ในเบราว์เซอร์นี้เท่านั้น และส่งตรงไปที่ api.anthropic.com ไม่ผ่านเซิร์ฟเวอร์อื่น สร้าง key ได้ที่ <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> · ไม่ใส่ key ก็ใช้แอปได้ แค่พิมพ์รายการเอง</p>
-    </details>
   </section>
 
   <section class="paper">
@@ -218,7 +189,7 @@ button{font:inherit;cursor:pointer;border-radius:999px}
     <textarea id="copyBox" hidden readonly style="width:100%;min-height:8em;font-family:var(--f-body);font-size:.8rem;color:var(--ink);background:var(--accent-soft);border:none;border-radius:10px;padding:10px"></textarea>
   </section>
 
-  <p class="ver">หารค่าข้าว v1.0.0</p>
+  <p class="ver">หารค่าข้าว v1.0.1</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
@@ -312,7 +283,7 @@ function render() {
   }).join("");
 
   if (!S.people.length) $("people").innerHTML = `<span class="hint">ยังไม่มีสมาชิก พิมพ์ชื่อแล้วกดเพิ่ม</span>`;
-  if (!S.items.length) $("items").innerHTML = `<p class="hint">ยังไม่มีรายการ สแกนบิลด้านบน หรือพิมพ์เพิ่มเองด้านล่าง</p>`;
+  if (!S.items.length) $("items").innerHTML = `<p class="hint">ยังไม่มีรายการ พิมพ์ชื่อรายการและราคาด้านล่าง</p>`;
   renderPay();
   document.querySelectorAll("[data-incl]").forEach(b => b.setAttribute("aria-checked", b.dataset.incl === S.incl));
   $("svc").value = S.svc; $("vat").value = S.vat; $("roundInt").checked = !!S.roundInt;
@@ -541,130 +512,7 @@ $("reset").addEventListener("click", e => {
     return;
   }
   clearTimeout(resetArmed); resetArmed = null; e.target.textContent = "เริ่มบิลใหม่";
-  S = BLANK(); openQR.clear(); $("scanStatus").hidden = true; render(); flash("ล้างแล้ว");
-});
-
-// ---- Scan receipt with Claude (Anthropic API, viewer's own key) ----
-const KEY_STORE = "billsplit-anthropic-key";
-const MODEL = "claude-opus-5-5";
-const getKey = () => { try { return localStorage.getItem(KEY_STORE) || "" } catch (e) { return "" } };
-function paintKey() {
-  const k = getKey();
-  $("keySummary").textContent = k ? `API key: ตั้งค่าแล้ว (…${k.slice(-4)}) · เปลี่ยน` : "ตั้งค่า Anthropic API key";
-  $("apiKey").value = "";
-}
-$("keyForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const v = $("apiKey").value.trim(); if (!v) return;
-  try { localStorage.setItem(KEY_STORE, v) } catch (err) { flash("บันทึก key ไม่ได้ในเบราว์เซอร์นี้"); return; }
-  paintKey(); $("keyBox").open = false; flash("บันทึก key แล้ว");
-});
-$("keyClear").addEventListener("click", () => { try { localStorage.removeItem(KEY_STORE) } catch (e) {} paintKey(); flash("ลบ key แล้ว"); });
-paintKey();
-
-const PROMPT = `This photo is a restaurant receipt (often Thai, may mix Thai and English).
-Extract every line item exactly as printed. For each line give:
-- "name": short dish name. Prefer the Thai name if present; add " xN" when the quantity N is more than 1.
-- "price": the LINE TOTAL in the price column (already multiplied by quantity), as a number.
-Do not include subtotal, service charge, VAT, rounding, discount summary or total as items.
-Also read: "service_pct" (service charge percent printed or implied, 0 if none), "vat_pct" (VAT percent, 0 if none), "included": which of these are ALREADY inside the item prices rather than added below the subtotal - one of "none", "svc", "vat", "both" (e.g. a line like "VAT included" or "ราคารวม VAT" means vat is included; if service/VAT are added as separate lines after the subtotal they are NOT included), and "total" (the final amount to pay, number or null).
-Reply with only JSON like:
-{"items":[{"name":"ลาบหมู","price":79},{"name":"ข้าวเหนียว x4","price":80}],"service_pct":10,"vat_pct":7,"included":"none","total":3172}`;
-
-// Shrink large photos to a JPEG under ~1600px so uploads stay small and fast
-function toJpegBase64(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url);
-      resolve(c.toDataURL("image/jpeg", 0.85).split(",")[1]);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject({ code: "image_rejected" }); };
-    img.src = url;
-  });
-}
-
-async function readReceipt(file, key) {
-  const data = await toJpegBase64(file);
-  let res;
-  try {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2026-10-21",
-        "anthropic-beta": "server-side-fallback-2026-07-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 16000,
-        fallbacks: "default",
-        messages: [{ role: "user", content: [
-          { type: "image", source: { type: "base64", media_type: "image/jpeg", data } },
-          { type: "text", text: PROMPT },
-        ] }],
-      }),
-    });
-  } catch (e) { throw { code: "network" }; }
-  if (!res.ok) {
-    const code = res.status === 401 ? "bad_key" : res.status === 429 ? "rate_limited"
-      : res.status === 529 || res.status >= 500 ? "overloaded" : res.status === 400 ? "image_rejected" : "other";
-    let msg = ""; try { msg = (await res.json())?.error?.message || "" } catch (e) {}
-    throw { code, msg };
-  }
-  const out = await res.json();
-  if (out.stop_reason === "refusal") throw { code: "refused" };
-  const text = (out.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-  const s = text.indexOf("{"), e = text.lastIndexOf("}");
-  if (s < 0 || e <= s) throw { code: "invalid_json" };
-  try { return JSON.parse(text.slice(s, e + 1)); } catch (err) { throw { code: "invalid_json" }; }
-}
-
-function status(html, cls = "") { const el = $("scanStatus"); el.className = "scanstatus " + cls; el.innerHTML = html; el.hidden = false; }
-const ERR = {
-  no_key: "ใส่ Anthropic API key ด้านล่างก่อน แล้วสแกนใหม่",
-  bad_key: "API key ไม่ถูกต้อง ตรวจ key ด้านล่างอีกครั้ง",
-  rate_limited: "ใช้งานถี่เกินไป ลองใหม่อีกสักครู่",
-  overloaded: "ระบบ AI ไม่ว่างชั่วคราว ลองใหม่อีกสักครู่",
-  network: "เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่",
-  image_rejected: "อ่านรูปนี้ไม่ได้ ลองรูปอื่น (JPG/PNG)",
-  invalid_json: "AI อ่านบิลไม่ครบ ลองถ่ายให้ชัดขึ้นแล้วสแกนใหม่",
-  refused: "AI อ่านรูปนี้ไม่ได้ ลองรูปอื่น",
-};
-
-$("billPhoto").addEventListener("change", async e => {
-  const file = e.target.files[0]; e.target.value = "";
-  if (!file) return;
-  const key = getKey();
-  if (!key) { status(ERR.no_key, "err"); $("keyBox").open = true; $("apiKey").focus(); return; }
-  const url = URL.createObjectURL(file);
-  status(`<img src="${url}" alt=""><span class="dot"></span> กำลังอ่านบิล อาจใช้เวลา 10–40 วินาที`);
-  try {
-    const r = await readReceipt(file, key);
-    const items = (r?.items || []).map(x => ({
-      id: Math.random().toString(36).slice(2),
-      name: String(x.name || "รายการ").trim(),
-      price: Math.round((+x.price || 0) * 100) / 100,
-      who: S.people.slice(),
-    })).filter(x => x.price > 0);
-    if (!items.length) throw { code: "invalid_json" };
-    S.items = items;
-    if (r.service_pct != null) S.svc = +r.service_pct || 0;
-    if (r.vat_pct != null) S.vat = +r.vat_pct || 0;
-    if (["none","svc","vat","both"].includes(r.included)) S.incl = r.included;
-    S.billTotal = +r.total || null;
-    save(); render();
-    status(`<img src="${url}" alt=""> อ่านได้ ${items.length} รายการ ตั้งค่าให้ทุกคนหารเท่ากันไว้ก่อน กดชื่อเพื่อเอาคนที่ไม่ได้กินออก`);
-  } catch (err) {
-    status(`<img src="${url}" alt=""> ${esc(ERR[err?.code] || ("สแกนไม่สำเร็จ ลองใหม่อีกครั้ง" + (err?.msg ? " (" + err.msg + ")" : "")))}`, "err");
-    if (err?.code === "bad_key") $("keyBox").open = true;
-  }
+  S = BLANK(); openQR.clear(); render(); flash("ล้างแล้ว");
 });
 
 render();
